@@ -1,65 +1,50 @@
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import '../styles/AllFlights.css'; // Create/modify this CSS file for a new design
 import { useNavigate } from 'react-router-dom';
-import '../styles/AllFlights.css';
 
 const AllFlights = () => {
-    const [flights, setFlights] = useState([]);
-    const navigate = useNavigate();
-  
-    
-    const fetchFlights = async () =>{
-      await axios.get('http://localhost:6001/fetch-flights').then(
-        (response)=>{
-          setFlights(response.data);
-          console.log(response.data)
-        }
-        )
-      }
-      
-      useEffect(()=>{
-        fetchFlights();
-      }, [])
-      
-    return (
-      <div className="allFlightsPage">
-        <h1>All Flights</h1>
-  
-        <div className="allFlights">
-  
-          {flights.map((Flight)=>{
-            return(
-  
-                <div className="allFlights-Flight" key={Flight._id}>
-                  <p><b>_id:</b> {Flight._id}</p>
-                  <span>
-                    <p><b>Flight Id:</b> {Flight.flightId}</p>
-                    <p><b>Flight name:</b> {Flight.flightName}</p>
-                  </span>
-                  <span>
-                    <p><b>Starting station:</b> {Flight.origin}</p>
-                    <p><b>Departure time:</b> {Flight.departureTime}</p>
-                  </span>
-                  <span>
-                    <p><b>Destination:</b> {Flight.destination}</p>
-                    <p><b>Arrival time:</b> {Flight.arrivalTime}</p>
-                  </span>
-                  <span>
-                    <p><b>Base price:</b> {Flight.basePrice}</p>
-                    <p><b>Total seats:</b> {Flight.totalSeats}</p>
-                  </span>
-                </div>
-            )
-          })}
-  
-  
-  
-  
-  
-   
-        </div>
-      </div>
-    )
-  }
+  const [flights, setFlights] = useState([]);
+  const navigate = useNavigate();
 
-export default AllFlights
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get('http://localhost:6001/fetch-flights');
+      setFlights(response.data);
+    } catch (err) {
+      console.error("Error fetching flights:", err);
+    }
+  };
+
+  return (
+    <div className="flights-page">
+      <h2 className="flights-title">Available Flights</h2>
+
+      <div className="flights-grid">
+        {flights.map((flight) => (
+          <div className="flight-card" key={flight._id}>
+            <div className="flight-card-header">
+              <h4>{flight.flightName}</h4>
+              <span>#{flight.flightId}</span>
+            </div>
+
+            <div className="flight-details">
+              <p><strong>From:</strong> {flight.origin}</p>
+              <p><strong>To:</strong> {flight.destination}</p>
+              <p><strong>Departure:</strong> {flight.departureTime}</p>
+              <p><strong>Arrival:</strong> {flight.arrivalTime}</p>
+              <p><strong>Price:</strong> ₹{flight.basePrice}</p>
+              <p><strong>Seats:</strong> {flight.totalSeats}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default AllFlights;

@@ -7,8 +7,8 @@ import Bookings from './pages/Bookings';
 import Admin from './pages/Admin';
 import AllUsers from './pages/AllUsers';
 import AllBookings from './pages/AllBookings';
+import NewFlight from './pages/NewFlight'; 
 import AllFlights from './pages/AllFlights';
-import NewFlight from './pages/NewFlight';
 import {Routes, Route} from 'react-router-dom'
 import LoginProtector from './RouteProtectors/LoginProtector';
 import AuthProtector from './RouteProtectors/AuthProtector';
@@ -28,7 +28,7 @@ function App() {
         <Route path='/auth' element={<LoginProtector> <Authenticate /> </LoginProtector>} />
         <Route path='/book-Flight/:id' element={<AuthProtector> <BookFlight /> </AuthProtector>} />
         <Route path='/bookings' element={<AuthProtector> <Bookings /> </AuthProtector>} />
-
+        <Route path="/add-flight" element={<AuthProtector> <NewFlight /> </AuthProtector>} />
         <Route path='/admin' element={<AuthProtector><Admin /> </AuthProtector>} />
         <Route path='/all-users' element={<AuthProtector><AllUsers /> </AuthProtector>} />
         <Route path='/all-bookings' element={<AuthProtector><AllBookings /> </AuthProtector>} />

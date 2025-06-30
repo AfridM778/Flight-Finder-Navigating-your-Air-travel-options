@@ -1,99 +1,95 @@
-import React, { useEffect, useState } from 'react'
-import '../styles/Bookings.css'
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/Bookings.css';
 
 const Bookings = () => {
-
-
-  const [bookings, setBookings] = useState([]);
-
+  const [userBookings, setUserBookings] = useState([]);
   const userId = localStorage.getItem('userId');
 
-  useEffect(()=>{
-    fetchBookings();
-  }, [])
+  useEffect(() => {
+    if (userId) {
+      const loadUserBookings = async () => {
+        try {
+          const { data } = await axios.get(`http://localhost:6001/bookings/${userId}`);
+          setUserBookings(data.reverse()); // Show latest first
+        } catch (err) {
+          console.error('❌ Failed to fetch bookings', err);
+        }
+      };
 
-  const fetchBookings = async () =>{
-    await axios.get('http://localhost:6001/fetch-bookings').then(
-      (response)=>{
-        setBookings(response.data.reverse());
-      }
-    )
-  }
-  const cancelTicket = async (id) =>{
-    await axios.put(`http://localhost:6001/cancel-ticket/${id}`).then(
-      (response)=>{
-        alert("Ticket cancelled!!");
-        fetchBookings();
-      }
-    )
-  }
+      loadUserBookings();
+    }
+  }, [userId]);
+
+  const handleCancel = async (bookingId) => {
+    try {
+      await axios.put(`http://localhost:6001/cancel-ticket/${bookingId}`);
+      alert('❌ Ticket cancelled successfully.');
+
+      // Re-fetch bookings after cancellation
+      const { data } = await axios.get(`http://localhost:6001/bookings/${userId}`);
+      setUserBookings(data.reverse());
+    } catch (err) {
+      alert('Failed to cancel ticket.');
+      console.error(err);
+    }
+  };
 
   return (
-    <div className="user-bookingsPage">
-      <h1>Bookings</h1>
+    <div className="bookings-page">
+      <h2 className="bookings-title">Your Bookings</h2>
 
-      <div className="user-bookings">
+      {userBookings.length === 0 ? (
+        <p>No bookings found.</p>
+      ) : (
+        <div className="bookings-list">
+          {userBookings.map((booking) => (
+            <div className="booking-card" key={booking._id}>
+              <div className="booking-row">
+                <span><strong>Booking ID:</strong> {booking._id}</span>
+                <span>
+                  <strong>Status:</strong>
+                  <span style={{ color: booking.bookingStatus === 'cancelled' ? 'red' : 'green', marginLeft: '5px' }}>
+                    {booking.bookingStatus}
+                  </span>
+                </span>
+              </div>
 
-        {bookings.filter(booking=> booking.user === userId).map((booking)=>{
-          return(
-            <div className="user-booking" key={booking._id}>
-            <p><b>Booking ID:</b> {booking._id}</p>
-            <span>
-              <p><b>Mobile:</b> {booking.mobile}</p>
-              <p><b>Email:</b> {booking.email}</p>
-            </span>
-            <span>
-              <p><b>Flight Id:</b> {booking.flightId}</p>
-              <p><b>Flight name:</b> {booking.flightName}</p>
-            </span>
-            <span>
-              <p><b>On-boarding:</b> {booking.departure}</p>
-              <p><b>Destination:</b> {booking.destination}</p>
-            </span>
-            <span>
+              <div className="booking-row">
+                <span><strong>Flight:</strong> {booking.flightName} ({booking.flightId})</span>
+                <span><strong>From:</strong> {booking.departure} <strong>To:</strong> {booking.destination}</span>
+              </div>
 
-              <div>
-                <p><b>Passengers:</b></p>
+              <div className="booking-row">
+                <span><strong>Journey Date:</strong> {booking.journeyDate?.slice(0, 10)}</span>
+                <span><strong>Journey Time:</strong> {booking.journeyTime}</span>
+              </div>
+
+              <div className="booking-row">
+                <span><strong>Booking Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</span>
+                <span><strong>Total Price:</strong> ₹{booking.totalPrice}</span>
+              </div>
+
+              <div className="booking-passengers">
+                <strong>Passengers:</strong>
                 <ol>
-                  {booking.passengers.map((passenger, i)=>{
-                    return(
-                      <li key={i}><p><b>Name:</b> {passenger.name},  <b>Age:</b> {passenger.age}</p></li>
-                    )
-                  })}
+                  {booking.passengers.map((p, index) => (
+                    <li key={index}>Name: {p.name}, Age: {p.age}, Gender: {p.gender}</li>
+                  ))}
                 </ol>
               </div>
-              {booking.bookingStatus === 'confirmed' ? <p><b>Seats:</b> {booking.seats}</p> : ""}
-              
-            </span>
-            <span>
-              <p><b>Booking date:</b> {booking.bookingDate.slice(0,10)}</p>
-              <p><b>Journey date:</b> {booking.journeyDate.slice(0,10)}</p>
-            </span>
-            <span>
-              <p><b>Journey Time:</b> {booking.journeyTime}</p>
-              <p><b>Total price:</b> {booking.totalPrice}</p>
-            </span>
-              {booking.bookingStatus === 'cancelled' ?
-                <p style={{color: "red"}}><b>Booking status:</b> {booking.bookingStatus}</p>
-                :
-                <p><b>Booking status:</b> {booking.bookingStatus}</p>
-              }
-            {booking.bookingStatus === 'confirmed' ?
-              <div>
-                <button className="btn btn-danger" onClick={()=> cancelTicket(booking._id)}>Cancel Ticket</button>
-              </div>
-            
-            :
-            <></>}
-          </div>
-          )
-        })}
 
-          
-      </div>
+              {booking.bookingStatus === 'confirmed' && (
+                <button className="btn btn-danger mt-2" onClick={() => handleCancel(booking._id)}>
+                  Cancel Ticket
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Bookings
+export default Bookings;

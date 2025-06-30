@@ -1,65 +1,56 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../components/Navbar'
-import '../styles/allUsers.css'
+import React, { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import '../styles/AllUsers.css';
 import axios from 'axios';
 
 const AllUsers = () => {
-
   const [users, setUsers] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchUsers();
-  },[]);
+  }, []);
 
-  const fetchUsers = async () =>{
-    await axios.get('http://localhost:6001/fetch-users').then(
-      (response) =>{
-        setUsers(response.data);
-      }
-    )
-  }
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:6001/fetch-users');
+      setUsers(response.data);
+    } catch (err) {
+      console.error("Error fetching users", err);
+    }
+  };
 
   return (
     <>
       <Navbar />
-
-      <div class="all-users-page">
-        <h2>All Users</h2>
-        <div class="all-users">
-
-        {users.filter(user=> user.usertype === 'customer').map((user)=>{
-            return(
-
-              <div class="user" key={user._id}>
-                  <p><b>UserId </b>{user._id}</p>
-                  <p><b>Username </b>{user.username}</p>
-                  <p><b>Email </b>{user.email}</p>
+      <div className="all-users-container">
+        <section className="user-section">
+          <h2 className="section-title">Customer Users</h2>
+          <div className="user-grid">
+            {users.filter(user => user.usertype === 'customer').map(user => (
+              <div className="user-card" key={user._id}>
+                <h5>{user.username}</h5>
+                <p><strong>User ID:</strong> {user._id}</p>
+                <p><strong>Email:</strong> {user.email}</p>
               </div>
-            )
-          })}
-            
-        </div>
+            ))}
+          </div>
+        </section>
 
-
-        <h2>Flight Operators</h2>
-        <div class="all-users">
-
-        {users.filter(user=> user.usertype === 'flight-operator').map((user)=>{
-            return(
-
-              <div class="user" key={user._id}>
-                  <p><b>Id </b>{user._id}</p>
-                  <p><b>Flight Name </b>{user.username}</p>
-                  <p><b>Email </b>{user.email}</p>
+        <section className="user-section">
+          <h2 className="section-title">Flight Operators</h2>
+          <div className="user-grid">
+            {users.filter(user => user.usertype === 'flight-operator').map(user => (
+              <div className="user-card" key={user._id}>
+                <h5>{user.username}</h5>
+                <p><strong>Operator ID:</strong> {user._id}</p>
+                <p><strong>Email:</strong> {user.email}</p>
               </div>
-            )
-          })}
-            
-        </div>  
-
-    </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default AllUsers
+export default AllUsers;

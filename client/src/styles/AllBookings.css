@@ -1,0 +1,9 @@
+.AllBookingsPage {
+  padding: 2rem;
+  background-color: #f0f4f8;
+}
+
+.AllBookingsPage h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+}

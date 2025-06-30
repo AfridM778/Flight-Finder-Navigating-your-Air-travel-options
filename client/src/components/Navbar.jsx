@@ -1,84 +1,90 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import '../styles/Navbar.css';
 import { useNavigate } from 'react-router-dom';
 import { GeneralContext } from '../context/GeneralContext';
 
 const Navbar = () => {
-
-    const navigate = useNavigate();
-    const usertype = localStorage.getItem('userType');
-
-    const {logout} = useContext(GeneralContext);
+  const navigate = useNavigate();
+  const usertype = localStorage.getItem('userType');
+  const { logout } = useContext(GeneralContext);
 
   return (
-    <>
-        <div className="navbar">
+    <nav className="custom-navbar navbar navbar-expand-lg navbar-light bg-light shadow-sm px-4">
+      <div className="container-fluid">
+        <span className="navbar-brand">
+          {usertype === 'admin'
+            ? 'SKYJETS (Admin)'
+            : usertype === 'flight-operator'
+            ? 'SKYJETS (Operator)'
+            : 'SKYJETS'}
+        </span>
 
-        {!usertype ? 
-        
-            <>
-                <h3 >SB Flights</h3>
+        <div className="collapse navbar-collapse">
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 d-flex gap-3 align-items-center">
 
-                <div className="nav-options" >
-                    <p onClick={()=>navigate('/')}>Home</p>
-                    <p onClick={()=>navigate('/auth')}>Login</p>
-                </div>
-            
-            </>
-        :
-        
-        <>
-        {usertype === 'customer' ? 
-        
-        <>
-            <h3 >SB Flights</h3>
-
-            <div className="nav-options" >
-
-                <p onClick={()=>navigate('/')}>Home</p>
-                <p onClick={()=>navigate('/bookings')}>Bookings</p>
-                <p onClick={logout}>Logout</p>
-
-            </div>
-        </>
-            :  usertype === 'admin' ?
-
-                    <>
-                        <h3 >SB Flights (Admin)</h3>
-                        <div className="nav-options" >
-
-                            <p onClick={()=>navigate('/admin')}>Home</p>
-                            <p onClick={()=>navigate('/all-users')}>Users</p>
-                            <p onClick={()=>navigate('/all-bookings')}>Bookings</p>
-                            <p onClick={()=>navigate('/all-flights')}>Flights</p>
-                            <p onClick={logout}>Logout</p>
-                        </div> 
-                    </>
-            
-                : usertype === 'flight-operator' ?
-                    <>
-                        <h3 >SB Flights (Operator)</h3>
-                        <div className="nav-options" >
-
-                            <p onClick={()=>navigate('/flight-admin')}>Home</p>
-                            <p onClick={()=>navigate('/flight-bookings')}>Bookings</p>
-                            <p onClick={()=>navigate('/flights')}>Flights</p>
-                            <p onClick={()=>navigate('/new-flight')}>Add Flight</p>
-                            <p onClick={logout}>Logout</p>
-                        </div> 
-                    </>
-            
-                :
-
-                    ""
-
-        }
-        </>
-        }
+            {!usertype ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/')}>Home</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/auth')}>Login</span>
+                </li>
+              </>
+            ) : usertype === 'customer' ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/')}>Home</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/bookings')}>Bookings</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={logout}>Logout</span>
+                </li>
+              </>
+            ) : usertype === 'admin' ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/admin')}>Home</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/all-users')}>Users</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/all-bookings')}>Bookings</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/all-flights')}>Flights</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={logout}>Logout</span>
+                </li>
+              </>
+            ) : usertype === 'flight-operator' ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/flight-admin')}>Home</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/flight-bookings')}>Bookings</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/flights')}>Flights</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={() => navigate('/new-flight')}>Add Flight</span>
+                </li>
+                <li className="nav-item">
+                  <span className="nav-link link-style" onClick={logout}>Logout</span>
+                </li>
+              </>
+            ) : null}
+          </ul>
         </div>
-    
-    </>
-  )
-}
+      </div>
+    </nav>
+  );
+};
 
-export default Navbar
+export default Navbar;
